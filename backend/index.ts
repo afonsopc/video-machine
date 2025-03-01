@@ -50,9 +50,10 @@ const getArtwork = async (url: string): Promise<ArrayBuffer> => {
   const metadata = JSON.parse(stdout);
   let artwork = metadata.thumbnails[metadata.thumbnails.length - 1];
   if (artwork.url.includes("maxresdefault")) {
-    artwork = metadata.thumbnails.find(
+    const squareArtwork = metadata.thumbnails.find(
       (thumbnail: any) => thumbnail.resolution === "544x544"
     );
+    if (squareArtwork) artwork = squareArtwork;
   }
   const artworkUrl = artwork?.url;
   if (!artworkUrl) throw new Error("Artwork not found.");

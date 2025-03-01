@@ -46,7 +46,7 @@ const VideoImage = ({ values, width, className, ...props }: Props) => {
       </div>
       <img
         src={artworkUrl}
-        className="absolute top-1/2 left-1/2 z-20 aspect-square w-16/50 -translate-x-1/2 -translate-y-3/5 transform rounded-[5%] border-[0.03em] border-gray-600 shadow-md"
+        className="absolute top-1/2 left-1/2 z-20 aspect-square w-16/50 -translate-x-1/2 -translate-y-3/5 transform rounded-[5%] border-[0.01em] border-gray-600 shadow-[0px_0px_0.7em_rgba(0,0,0,1)]"
       />
     </div>
   );

@@ -10,8 +10,8 @@ const DEFAULT_IMAGE_OPTIONS = {
 };
 
 const VIDEO_IMAGE_OPTIONS = {
-  width: 3840,
-  height: 2160,
+  width: 7680,
+  height: 4320,
   ...DEFAULT_IMAGE_OPTIONS,
 };
 
@@ -24,7 +24,7 @@ const THUMB_IMAGE_OPTIONS = {
 const DEFAULT_AUDIO_OPTIONS = {
   reverbWet: 0.25,
   reverbDry: 0.6,
-  speed: 0.87,
+  speed: 0.84,
   volume: 0.4,
 };
 
@@ -89,7 +89,7 @@ export const createVideo = async (
   ffmpeg.on("progress", ({ progress }) => progressCallback?.(progress * 100));
   await ffmpeg.exec(["-i", "video.png", "-i", "song.wav", "output.mp4"]);
   const fileData = await ffmpeg.readFile("output.mp4");
-  const uint8array = new Uint8Array(fileData as ArrayBuffer);
+  const uint8array = new Uint8Array(fileData as unknown as ArrayBuffer);
   const videoBlob = new Blob([uint8array.buffer], { type: "video/mp4" });
   return videoBlob;
 };
