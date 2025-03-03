@@ -33,3 +33,11 @@ export const getSong = async (
 
   return { audio, artwork, metadata };
 };
+
+export const convertToOpus = async (blob: Blob): Promise<Blob> => {
+  const response = await fetch(`${API_URL}/convert-opus`, {
+    method: "POST",
+    body: blob,
+  });
+  return response.blob();
+};

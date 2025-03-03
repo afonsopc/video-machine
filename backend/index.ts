@@ -9,6 +9,7 @@ import path from "path";
 import os from "os";
 
 const app = new Hono();
+
 const execAsync = promisify(exec);
 const readFileArrayBuffer = async (path: string): Promise<ArrayBuffer> => {
   const buffer = await readFile(path);
@@ -29,6 +30,17 @@ const getTempFile = (extension?: string): string => {
   const baseName = Math.random().toString(36).substring(7);
   const fileName = `${baseName}.${extension ?? "tmp"}`;
   return path.join(os.tmpdir(), fileName);
+};
+const cleanYoutubeUrl = (url: string): string => {
+  if (!url.includes("youtube.com") && !url.includes("youtu.be")) return url;
+  const listIndex = url.indexOf("?list=");
+  if (listIndex !== -1) return url.substring(0, listIndex);
+  return url;
+};
+const cleanUrl = (url: string): string => {
+  let cleanUrl = url;
+  cleanUrl = cleanYoutubeUrl(cleanUrl);
+  return cleanUrl;
 };
 
 app.use("/*", cors());
@@ -97,7 +109,7 @@ const getMetadata = async (
 };
 
 app.get("/artwork/:url", async (c) => {
-  const url = c.req.param("url");
+  const url = cleanUrl(c.req.param("url"));
   const artwork = await getArtwork(url);
   return c.body(artwork, 200, {
     "Content-Type": "image/jpeg",
@@ -106,7 +118,7 @@ app.get("/artwork/:url", async (c) => {
 });
 
 app.get("/audio/:url", async (c) => {
-  const url = c.req.param("url");
+  const url = cleanUrl(c.req.param("url"));
   const audio = await getAudio(url);
   return c.body(audio, 200, {
     "Content-Type": "audio/opus",
@@ -115,9 +127,26 @@ app.get("/audio/:url", async (c) => {
 });
 
 app.get("/metadata/:url", async (c) => {
-  const url = c.req.param("url");
+  const url = cleanUrl(c.req.param("url"));
   const metadata = await getMetadata(url);
   return c.json(metadata, 200);
 });
 
-export default app;
+app.post("/convert-opus", async (c) => {
+  const file = await c.req.blob();
+  const tempFile = getTempFile();
+  const tempFileOpus = getTempFile("opus");
+  await writeFile(tempFile, new Uint8Array(await file.arrayBuffer()));
+  await convertFile(tempFile, tempFileOpus);
+  const arrayBuffer = await readFileArrayBuffer(tempFileOpus);
+  await execAsync(`rm ${tempFileOpus}`);
+  return c.body(arrayBuffer, 200, {
+    "Content-Type": "audio/opus",
+    "Content-Disposition": `attachment; filename=song.opus`,
+  });
+});
+
+export default {
+  fetch: app.fetch,
+  maxRequestBodySize: 1024 ** 3,
+};

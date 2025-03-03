@@ -4,6 +4,7 @@ import { ControlValues, ProcessedValues } from "./type";
 import VideoImage from "@/components/output/video-image";
 import { processAudio } from "./audio";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { convertToOpus } from "./api";
 
 const DEFAULT_IMAGE_OPTIONS = {
   quality: 0.9,
@@ -24,7 +25,7 @@ const THUMB_IMAGE_OPTIONS = {
 const DEFAULT_AUDIO_OPTIONS = {
   reverbWet: 0.25,
   reverbDry: 0.6,
-  speed: 0.84,
+  speed: 0.82,
   volume: 0.4,
 };
 
@@ -67,10 +68,15 @@ export const processValues = async (
     });
   progressCallback?.(0);
   const videoImage = await tryManyTimes(videoImageProcess);
-  progressCallback?.(33);
+  progressCallback?.(25);
   const thumbImage = await tryManyTimes(thumbImageProcess);
-  progressCallback?.(66);
-  const modifiedSong = await processAudio(values.song, DEFAULT_AUDIO_OPTIONS);
+  progressCallback?.(50);
+  const modifiedSongWav = await processAudio(
+    values.song,
+    DEFAULT_AUDIO_OPTIONS,
+  );
+  progressCallback?.(75);
+  const modifiedSong = await convertToOpus(modifiedSongWav);
   progressCallback?.(100);
 
   return { videoImage, thumbImage, modifiedSong };
@@ -85,9 +91,9 @@ export const createVideo = async (
   const videoImageBuff = new Uint8Array(await videoImage.arrayBuffer());
   await ffmpeg.writeFile("video.png", videoImageBuff);
   const modifiedSongBuff = new Uint8Array(await modifiedSong.arrayBuffer());
-  await ffmpeg.writeFile("song.wav", modifiedSongBuff);
+  await ffmpeg.writeFile("song.opus", modifiedSongBuff);
   ffmpeg.on("progress", ({ progress }) => progressCallback?.(progress * 100));
-  await ffmpeg.exec(["-i", "video.png", "-i", "song.wav", "output.mp4"]);
+  await ffmpeg.exec(["-i", "video.png", "-i", "song.opus", "output.mp4"]);
   const fileData = await ffmpeg.readFile("output.mp4");
   const uint8array = new Uint8Array(fileData as unknown as ArrayBuffer);
   const videoBlob = new Blob([uint8array.buffer], { type: "video/mp4" });

@@ -33,7 +33,10 @@ const Output = ({ values }: Props) => {
           { fileName: "video.mp4", blob: videoBlob },
           { fileName: "thumb.png", blob: processedValues.thumbImage },
           { fileName: "video.png", blob: processedValues.videoImage },
-          { fileName: "modified-song.wav", blob: processedValues.modifiedSong },
+          {
+            fileName: "modified-song.opus",
+            blob: processedValues.modifiedSong,
+          },
           { fileName: "artwork", blob: values.artwork },
           { fileName: "song", blob: values.song },
         ]);
