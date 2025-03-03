@@ -110,7 +110,7 @@ export default function Control({ className, onSubmit }: Props) {
 
   return (
     <div className={cn("flex flex-col gap-8", className)}>
-      <div className="flex flex-col gap-3 rounded-lg border p-5 shadow-sm">
+      <div className="bg-background flex flex-col gap-3 rounded-lg border p-5 shadow-sm">
         <Label htmlFor="url">Song Fetcher</Label>
         <div className="flex justify-between gap-3">
           <Input
@@ -130,7 +130,12 @@ export default function Control({ className, onSubmit }: Props) {
         </div>
       </div>
       {loading && <p>Loading...</p>}
-      <div className={cn(loading ? "hidden" : "block")}>
+      <div
+        className={cn(
+          "bg-background rounded-lg border p-5 shadow-sm",
+          loading ? "hidden" : "block",
+        )}
+      >
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}

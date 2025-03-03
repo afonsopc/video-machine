@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "http://localhost:3000/api";
 
 export const getArtwork = async (url: string): Promise<Blob> => {
   const response = await fetch(`${API_URL}/artwork/${encodeURIComponent(url)}`);

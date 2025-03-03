@@ -14,9 +14,9 @@ type Props = {
 const Output = ({ values }: Props) => {
   if (!values) throw new Error("Values are required");
 
-  const [processedValues, setProcessedValues] = useState<ProcessedValues>();
+  const [_processedValues, setProcessedValues] = useState<ProcessedValues>();
   const [videoUrl, setVideoUrl] = useState<string>();
-  const [video, setVideo] = useState<Blob>();
+  const [_video, setVideo] = useState<Blob>();
   const [zip, setZip] = useState<Blob>();
   const [zipUrl, setZipUrl] = useState<string>();
   const [progress, setProgress] = useState<number>(0);
@@ -75,7 +75,7 @@ const Output = ({ values }: Props) => {
     );
 
   return (
-    <div className="flex max-w-[640px] flex-col gap-3">
+    <div className="bg-background flex max-w-[640px] flex-col gap-3 border p-5 shadow-md">
       <h1 className="font-bold">Here is your video!</h1>
       <video src={videoUrl} controls className="rounded-lg border shadow-md" />
       <h1 className="font-bold">

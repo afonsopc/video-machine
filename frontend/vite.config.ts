@@ -14,4 +14,7 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util"],
   },
+  build: {
+    chunkSizeWarningLimit: 1024 ** 2,
+  },
 });
