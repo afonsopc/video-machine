@@ -3,11 +3,9 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { readFile } from "fs/promises";
 import { writeFile } from "fs/promises";
-import path from "path";
-import os from "os";
 import type { BlankEnv, BlankInput } from "hono/types";
+import { execAsync, getTempFile } from ".";
 
-const execAsync = promisify(exec);
 const readFileArrayBuffer = async (path: string): Promise<ArrayBuffer> => {
   const buffer = await readFile(path);
   return buffer.buffer.slice(
@@ -22,11 +20,6 @@ const convertFile = async (
   const command = `ffmpeg -i ${inputFilePath} ${outputFilePath}`;
   await execAsync(command);
   await execAsync(`rm ${inputFilePath}`);
-};
-const getTempFile = (extension?: string): string => {
-  const baseName = Math.random().toString(36).substring(7);
-  const fileName = `${baseName}.${extension ?? "tmp"}`;
-  return path.join(os.tmpdir(), fileName);
 };
 const cleanYoutubeUrl = (url: string): string => {
   if (!url.includes("youtube.com") && !url.includes("youtu.be")) return url;

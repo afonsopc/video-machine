@@ -4,7 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --hot index.ts",
-    "start": "bun run index.ts"
+    "start": "bun run index.ts",
+    "compile-static": "chmod +x compile-static.sh && ./compile-static.sh",
+    "compile": "chmod +x compile.sh && ./compile.sh",
+    "clean": "rm -rf node_modules static && rm -f out static.js"
   },
   "devDependencies": {
     "@types/bun": "latest"
