@@ -25,6 +25,11 @@ import { getSong } from "@/lib/api";
 import { useState } from "react";
 import { Label } from "./ui/label";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog"
+import ImageCrop from "./image-crop";
 
 const AUDIO_MIME_TYPES = [".mp3", ".wav", ".ogg", ".flac", ".webm"];
 const IMAGE_MIME_TYPES = [
@@ -68,19 +73,32 @@ type Props = {
 export default function Control({ className, onSubmit }: Props) {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const [cropOpen, setCropOpen] = useState(false);
+  const [values, setValues] = useState<ControlValues>();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSubmit({
-      title: values.title,
-      artists: values.artists.split(", "),
-      artwork: values.artworkFiles[0],
+    const artwork = values.artworkFiles[0];
+    setValues({
+      title: values.title.trim(),
+      artists: values.artists.trim().split(", "),
+      artwork,
+      originalArtwork: artwork,
       song: values.songFiles[0],
       url,
     });
+    setCropOpen(true);
+  };
+
+  const handleCrop = (croppedImageBlob: Blob) => {
+    if (!values) return;
+
+    const finalValues = { ...values, artwork: croppedImageBlob };
+    setCropOpen(false);
+    onSubmit(finalValues);
   };
 
   const handleFetch = async () => {
@@ -110,6 +128,11 @@ export default function Control({ className, onSubmit }: Props) {
 
   return (
     <div className={cn("flex flex-col gap-8", className)}>
+      <Dialog open={cropOpen} onOpenChange={setCropOpen}>
+        <DialogContent>
+          {values ? <ImageCrop onCrop={handleCrop} image={values.artwork} /> : <div>No values</div>}
+        </DialogContent>
+      </Dialog>
       <div className="bg-background flex flex-col gap-3 rounded-lg border p-5 shadow-sm">
         <Label htmlFor="url">Song Fetcher</Label>
         <div className="flex justify-between gap-3">

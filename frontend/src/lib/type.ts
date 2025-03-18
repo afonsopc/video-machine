@@ -1,5 +1,6 @@
 export type ControlValues = {
-  artwork: File;
+  artwork: Blob;
+  originalArtwork: File;
   song: File;
   artists: string[];
   title: string;

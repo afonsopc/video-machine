@@ -37,7 +37,8 @@ const Output = ({ values }: Props) => {
             fileName: "modified-song.opus",
             blob: processedValues.modifiedSong,
           },
-          { fileName: "artwork", blob: values.artwork },
+          { fileName: "original-artwork", blob: values.originalArtwork },
+          { fileName: "cropped-artwork.webp", blob: values.artwork },
           { fileName: "song", blob: values.song },
         ]);
         setZip(zipBlob);
